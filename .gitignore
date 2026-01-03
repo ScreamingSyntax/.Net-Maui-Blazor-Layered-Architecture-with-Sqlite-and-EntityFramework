@@ -1,0 +1,26 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio / Rider / VS Code files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Mac OS system files
+.DS_Store
+
+# NuGet packages
+*.nupkg
+packages/
+
+# SQLite database files
+*.db
+
+# Temporary files
+*.log
+*.tmp
+
+# Blazor WebAssembly framework files
+wwwroot/_framework/

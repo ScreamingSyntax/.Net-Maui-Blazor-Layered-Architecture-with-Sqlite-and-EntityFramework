@@ -1,0 +1,148 @@
+@page "/users"
+@inject IUserService UserService
+
+<h3>User Management</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success">
+        @successMessage
+    </div>
+}
+
+<EditForm Model="@userViewModel" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Name:</label>
+        <InputText @bind-Value="userViewModel.Name" class="form-control" />
+        <ValidationMessage For="@(() => userViewModel.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label>Email:</label>
+        <InputText @bind-Value="userViewModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => userViewModel.Email)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@isLoading">
+        @(isLoading ? "Saving..." : "Add User")
+    </button>
+</EditForm>
+
+<hr />
+
+<h4>User List</h4>
+
+@if (users == null)
+{
+    <p>Loading...</p>
+}
+else if (!users.Any())
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                    <td>
+                        <button @onclick="() => DeleteUser(user.Id)" class="btn btn-danger btn-sm">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private UserViewModel userViewModel = new();
+    private List<UserDisplayModel>? users;  // ✅ Uses DisplayModel, NOT Entity
+    private string? errorMessage;
+    private string? successMessage;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        var result = await UserService.GetAllUsersAsync();
+        
+        if (result.Success)
+        {
+            users = result.Data;
+        }
+        else
+        {
+            errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isLoading = true;
+        errorMessage = null;
+        successMessage = null;
+
+        var result = await UserService.AddUserAsync(userViewModel);
+        
+        if (result.Success)
+        {
+            successMessage = "User added successfully!";
+            userViewModel = new UserViewModel();
+            await LoadUsers();
+        }
+        else
+        {
+            errorMessage = result.ErrorMessage;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task DeleteUser(int id)
+    {
+        errorMessage = null;
+        successMessage = null;
+
+        var result = await UserService.DeleteUserAsync(id);
+        
+        if (result.Success)
+        {
+            successMessage = "User deleted successfully!";
+            await LoadUsers();
+        }
+        else
+        {
+            errorMessage = result.ErrorMessage;
+        }
+    }
+}
