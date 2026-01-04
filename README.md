@@ -85,7 +85,7 @@ Full step-by-step walkthrough including:
 - Best practices
 
 👉 **Read the Medium Article**  
-[https://medium.com/@yourusername/building-a-layered-maui-blazor-app-with-sqlite-and-entity-framework-core-...](https://medium.com/@jha.aaryan/building-a-layered-maui-blazor-app-with-sqlite-and-entity-framework-core-d7f0c71449ab)
+[(https://medium.com/@jha.aaryan/building-a-layered-maui-blazor-app-with-sqlite-and-entity-framework-core-d7f0c71449ab)]
 
 
 ---
